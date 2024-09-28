@@ -1,4 +1,4 @@
-@startuml Eshop
+@startuml
 
 class Product {
     +int id
@@ -17,6 +17,12 @@ class Order {
     +String status
 }
 
+class Payment {
+    +int id
+    +String method
+    +boolean confirmed
+}
+
 class SecurityScheme {
     +String type
     +String authorizationUrl
@@ -29,6 +35,8 @@ class Scope {
 }
 
 Product "1" -- "0..*" Order : contains >
+Order "0..*" -- "1" Payment : processed by >
+
 Category "1" -- "0..*" Product : categorizes >
 SecurityScheme "1" -- "0..*" Scope : defines >
 
