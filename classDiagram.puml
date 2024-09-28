@@ -1,43 +1,77 @@
 @startuml
 
+
+class clientOrder {
+    +string orderId
+    +string clientId
+}
+
+class Client {
+    +string id
+    +string email
+}
+
+class orderProduct {
+    +int quantity
+    +string orderId
+    +string productId
+}
+
 class Product {
-    +int id
-    +String name
+    +string id
+    +string name
     +float price
+    +productStatus status
+}
+
+class productStatus {
+    +INSTOCK
+    +OUTOFSTOCK
+    +PREORDER
 }
 
 class Category {
-    +int id
-    +String name
+    +string id
+    +string name
 }
 
 class Order {
-    +int id
+    +string id
     +float totalPrice
-    +String status
+    +orderStatus status
 }
 
 class Payment {
-    +int id
-    +String method
+    +string id
+    +string method
     +boolean confirmed
 }
 
-class SecurityScheme {
-    +String type
-    +String authorizationUrl
-    +String tokenUrl
+class Delivery {
+    +string id
+    +string method
+    +string deliveryDate
 }
 
-class Scope {
-    +String name
-    +String description
+class orderStatus {
+    +PENDING
+    +PROCESSING
+    +SHIPPED
+    +DELIVERED
 }
 
-Product "1" -- "0..*" Order : contains >
+Order "1" -- "0..*" orderStatus : has >
+Product "1" -- "0..*" productStatus : has >
+' Product "1" -- "0..*" Order : contains >
 Order "0..*" -- "1" Payment : processed by >
-
+Order "0..*" -- "1" Payment : processed by >
+Order "0..*" -- "1" Delivery : delivered by >
 Category "1" -- "0..*" Product : categorizes >
-SecurityScheme "1" -- "0..*" Scope : defines >
+' Many-to-Many relationship between Order and Product
+Order "0..*" -- "0..*" orderProduct : contains >
+Product "0..*" -- "0..*" orderProduct : includes >
+' Many-to-Many relationship between Order and Product
+Client "0..*" -- "0..*" clientOrder : contains >
+Order "0..*" -- "0..*" clientOrder : includes >
 
 @enduml
