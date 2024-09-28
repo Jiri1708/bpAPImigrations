@@ -49,6 +49,16 @@ components:
         type: string
         format: ipv4
 
+    IdPath:
+      name: id
+      in: path
+      required: true
+      description: ID entity.
+      schema:
+        type: string
+        format: guid
+        example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
+
 paths:
   /products:
     get:
@@ -143,14 +153,7 @@ paths:
       summary: Získat detail produktu podle ID.
       operationId: getProductById
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID produktu, který chcete získat.
-          schema:
-            type: string
-            format: guid
-            example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
+        - $ref: "#components/parameters/IdPath"
         - $ref: "#components/parameters/TraceStateHeader"
         - $ref: "#components/parameters/ClientIPHeader"
       security:
@@ -192,13 +195,7 @@ paths:
       summary: Aktualizovat produkt podle ID.
       operationId: updateProduct.
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID produktu, který chcete aktualizovat.
-          schema:
-            type: integer
-            example: 1
+        - $ref: "#components/parameters/IdPath"
         - $ref: "#components/parameters/TraceStateHeader"
         - $ref: "#components/parameters/ClientIPHeader"
       security:
@@ -237,14 +234,7 @@ paths:
       summary: Smazat produkt podle ID.
       operationId: deleteProduct.
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: "ID produktu, který chcete smazat."
-          schema:
-            type: string
-            format: guid
-            example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
+        - $ref: "#components/parameters/IdPath"
         - $ref: "#components/parameters/TraceStateHeader"
         - $ref: "#components/parameters/ClientIPHeader"
       security:
@@ -414,14 +404,7 @@ paths:
       summary: Get order details by ID.
       operationId: getOrderById
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: The ID of the order you want to retrieve.
-          schema:
-            type: string
-            format: guid
-            example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
+        - $ref: "#components/parameters/IdPath"
         - $ref: "#components/parameters/TraceStateHeader"
         - $ref: "#components/parameters/ClientIPHeader"
       security:
