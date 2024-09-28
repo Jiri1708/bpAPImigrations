@@ -72,8 +72,9 @@ paths:
                   type: object
                   properties:
                     id:
-                      type: integer
-                      example: 1
+                      type: string
+                      format: guid
+                      example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
                     name:
                       type: string
                       example: "Produkt A"
@@ -81,7 +82,6 @@ paths:
                       type: number
                       format: float
                       example: 19.99
-
     post:
       tags:
         - products controller
@@ -110,6 +110,21 @@ paths:
       responses:
         "201":
           description: Produkt byl úspěšně přidán.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "7e68b0ce-e037-49e6-bf75-7098ac91dfc5"
+                  name:
+                    type: string
+                    example: "Nový Produkt"
+                  price:
+                    type: number
+                    format: float
+                    example: 29.99
         "400":
           description: Chybný požadavek.
           content:
@@ -133,104 +148,107 @@ paths:
           required: true
           description: ID produktu, který chcete získat.
           schema:
-            type: integer 
-            example : 1 
-        - $ref : "#components/parameters/TraceStateHeader"
-        - $ref : "#components/parameters/ClientIPHeader"
+            type: string
+            format: guid
+            example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
+        - $ref: "#components/parameters/TraceStateHeader"
+        - $ref: "#components/parameters/ClientIPHeader"
       security:
         - OIDC: [openid, profile, products.read]
       responses:
         "200":
-          description : Úspěšná odpověď s detaily produktu.
-          content :
-            application/json :
-              schema :
-                type : object 
-                properties :
-                  id :
-                    type : integer 
-                    example : 1 
-                  name :
-                    type : string 
-                    example : "Produkt A" 
-                  price :
-                    type : number 
-                    format : float 
-                    example : 19.99 
+          description: Úspěšná odpověď s detaily produktu.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: guid
+                    example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
+                  name:
+                    type: string
+                    example: "Produkt A"
+                  price:
+                    type: number
+                    format: float
+                    example: 19.99
 
         "404":
-          description : Produkt nenalezen.
-          content :
-            application/json :
-              schema :
-                type : object 
-                properties :
-                  error :
-                    type : string 
-                    example : "Produkt s ID 1 nebyl nalezen."
+          description: Produkt nenalezen.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Produkt s ID 1 nebyl nalezen."
 
     put:
       tags:
         - products controller
-      summary : Aktualizovat produkt podle ID.
-      operationId : updateProduct.
-      parameters :
-       - name : id 
-         in : path 
-         required : true 
-         description : ID produktu, který chcete aktualizovat.
-         schema :
-           type : integer 
-           example : 1 
-       - $ref : "#components/parameters/TraceStateHeader"
-       - $ref : "#components/parameters/ClientIPHeader"
-      security :
-         - OIDC: [openid, profile, products.update]
-      requestBody :
-         required: true 
-         content :
-           application/json :
-             schema :
-               type : object 
-               properties :
-                 name:
-                   type: string 
-                   example: "Aktualizovaný Produkt" 
-
-                 price :
-                   type: number 
-                   format: float 
-                   example: 25.99 
-      responses:
-        "200":
-         description: "Produkt byl úspěšně aktualizován."
-        "404":
-         description: "Produkt nenalezen."
-         content:
+      summary: Aktualizovat produkt podle ID.
+      operationId: updateProduct.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID produktu, který chcete aktualizovat.
+          schema:
+            type: integer
+            example: 1
+        - $ref: "#components/parameters/TraceStateHeader"
+        - $ref: "#components/parameters/ClientIPHeader"
+      security:
+        - OIDC: [openid, profile, products.update]
+      requestBody:
+        required: true
+        content:
           application/json:
             schema:
-              type: object 
+              type: object
               properties:
-                error:
-                  type: string 
-                  example: "Produkt s ID 1 nebyl nalezen."
+                name:
+                  type: string
+                  example: "Aktualizovaný Produkt"
+
+                price:
+                  type: number
+                  format: float
+                  example: 25.99
+      responses:
+        "200":
+          description: "Produkt byl úspěšně aktualizován."
+        "404":
+          description: "Produkt nenalezen."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Produkt s ID 1 nebyl nalezen."
     delete:
       tags:
         - products controller
       summary: Smazat produkt podle ID.
       operationId: deleteProduct.
       parameters:
-       - name: id 
-         in: path 
-         required: true 
-         description: "ID produktu, který chcete smazat."
-         schema:
-           type: number 
-           example: 1 
-       - $ref: "#components/parameters/TraceStateHeader"
-       - $ref: "#components/parameters/ClientIPHeader"
+        - name: id
+          in: path
+          required: true
+          description: "ID produktu, který chcete smazat."
+          schema:
+            type: string
+            format: guid
+            example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
+        - $ref: "#components/parameters/TraceStateHeader"
+        - $ref: "#components/parameters/ClientIPHeader"
       security:
-        - OIDC: [openid,profile,products.delete]
+        - OIDC: [openid, profile, products.delete]
       responses:
         "204":
           description: "Produkt byl úspěšně smazán."
@@ -248,17 +266,17 @@ paths:
     get:
       tags:
         - categories controller
-      summary: Get categories list.
+      summary: Získat seznam kategorií
       operationId: getCategories
       security:
-       - OIDC: [openid, profile,categories.read]
+        - OIDC: [openid, profile, categories.read]
       parameters:
-       - $ref: "#components/parameters/TraceStateHeader"
+        - $ref: "#components/parameters/TraceStateHeader"
 
-       - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#components/parameters/ClientIPHeader"
       responses:
         "200":
-          description: "Successful response with category list."
+          description: "Úspěšná odpověď se seznamem kategorií"
           content:
             application/json:
               schema:
@@ -273,50 +291,50 @@ paths:
                       type: string
                       example: "Kategorie A"
         "401":
-         description: "Unauthorized access."
-         content:
-           application/json:
-             schema:
-               type: object
-               properties:
-                 error:
-                   type: string
-                   example: "Invalid token."
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Neplatný token"
     post:
       tags:
-       - categories controller
-      summary: Add a new category.
+        - categories controller
+      summary: Přidat novou.
       operationId: addCategory.
       security:
-       - OIDC: [openid, profile,categories.create]
+        - OIDC: [openid, profile, categories.create]
       parameters:
-       - $ref: "#components/parameters/TraceStateHeader"
-       - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#components/parameters/TraceStateHeader"
+        - $ref: "#components/parameters/ClientIPHeader"
 
       requestBody:
         required: true
         content:
           application/json:
-           schema:
-             type: object
-             properties:
-               name:
-                 type: string
-                 example: "Nová Kategorie"
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Nová Kategorie"
       responses:
-       "201":
-         description: "Category was successfully added."
+        "201":
+          description: "Category was successfully added."
 
-       "400":
-         description: "Bad request."
-         content:
-           application/json:
-             schema:
-               type: object
-               properties:
-                 error:
-                   type: string
-                   example: "Missing required field 'name'."
+        "400":
+          description: "Bad request."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Missing required field 'name'."
   /orders:
     get:
       tags:
@@ -324,31 +342,31 @@ paths:
       summary: Get orders list.
       operationId: getOrders.
       security:
-       - OIDC: [openid, profile, orders.read]
+        - OIDC: [openid, profile, orders.read]
       parameters:
-       - $ref: "#components/parameters/TraceStateHeader"
-       - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#components/parameters/TraceStateHeader"
+        - $ref: "#components/parameters/ClientIPHeader"
       responses:
-       "200":
-         description: "Successful response with order list."
-         content:
-           application/json:
-             schema:
-               type: array
-               items: 
-                type: object
-                properties:
-                 id: 
-                  type: string
-                  format: guid
-                  example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
-                 totalPrice:
-                  type: number
-                  format: float
-                  example: 19.99
-                 status:
-                  type: string 
-                  example: "Zpracováno" 
+        "200":
+          description: "Successful response with order list."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: guid
+                      example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
+                    totalPrice:
+                      type: number
+                      format: float
+                      example: 19.99
+                    status:
+                      type: string
+                      example: "Zpracováno"
     post:
       tags:
         - orders controller
@@ -401,12 +419,13 @@ paths:
           required: true
           description: The ID of the order you want to retrieve.
           schema:
-            type: number
-            example: 1
+            type: string
+            format: guid
+            example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
         - $ref: "#components/parameters/TraceStateHeader"
         - $ref: "#components/parameters/ClientIPHeader"
       security:
-        - OIDC: [openid,profile,orders.read]
+        - OIDC: [openid, profile, orders.read]
       responses:
         "200":
           description: "Successful response with order details."
@@ -416,22 +435,22 @@ paths:
                 type: object
                 properties:
                   id:
-                    type: integer 
+                    type: string
+                    format: guid
+                    example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
+                  totalPrice:
+                    type: integer
                     example: 1
-                  totalPrice: 
-                    type: integer 
-                    example: 1
-                  status: 
-                    type: string 
+                  status:
+                    type: string
                     example: "Zpracováno"
         "404":
-          description: "Order not found."
+          description: "Objednávka nenalezena."
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   error:
-                    type: string 
-                    example: "Order with ID 1 was not found." 
-
+                    type: string
+                    example: "Objednávka s ID 125125 nebyla nalezena"
