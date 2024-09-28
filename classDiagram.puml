@@ -1,0 +1,35 @@
+@startuml Eshop
+
+class Product {
+    +int id
+    +String name
+    +float price
+}
+
+class Category {
+    +int id
+    +String name
+}
+
+class Order {
+    +int id
+    +float totalPrice
+    +String status
+}
+
+class SecurityScheme {
+    +String type
+    +String authorizationUrl
+    +String tokenUrl
+}
+
+class Scope {
+    +String name
+    +String description
+}
+
+Product "1" -- "0..*" Order : contains >
+Category "1" -- "0..*" Product : categorizes >
+SecurityScheme "1" -- "0..*" Scope : defines >
+
+@enduml
