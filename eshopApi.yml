@@ -1,0 +1,496 @@
+openapi: 3.0.0
+
+info:
+  title: Eshop API
+  description: API pro správu eshopu s podporou OIDC
+  version: 1.1.0
+
+servers:
+  - url: https://eshop.example.com/v1
+
+components:
+
+  securitySchemes:
+    OIDC:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.example.com/oauth2/authorize
+          tokenUrl: https://auth.example.com/oauth2/token
+          scopes:
+            openid: Získání identifikátoru uživatele
+            profile: Přístup k uživatelskému profilu
+            email: Přístup k uživatelské emailové adrese
+            products: 
+              description: Správa produktů
+              operations:
+                - read: 'Čtení seznamu produktů'
+                - create: 'Přidání nového produktu'
+                - update: Aktualizace produktu
+                - delete: Smazání produktu
+            categories:
+              description: Správa kategorií
+              operations:
+                - read: Čtení seznamu kategorií
+                - create: Přidání nové kategorie
+            orders:
+              description: Správa objednávek
+              operations:
+                - read: Čtení seznamu objednávek
+                - create: Vytvoření nové objednávky
+
+  parameters:
+    TraceStateHeader:
+      name: tracestate
+      in: header
+      required: false
+      description: "Korelaci žádosti pro sledování toku dat."
+      schema:
+        type: string
+  
+    ClientIPHeader:
+      name: X-Client-IP
+      in: header
+      required: false
+      description: "IP adresa klienta, který provádí požadavek."
+      schema:
+        type: string
+        format: ipv4
+
+paths:
+  /products:
+    get:
+      summary: Získat seznam produktů
+      operationId: getProducts
+      security:
+        - OIDC: [openid, profile, products.read]
+      parameters:
+        - $ref: '#/parameters/TraceStateHeader'
+        - $ref: '#/parameters/ClientIPHeader'
+      responses:
+        '200':
+          description: Úspěšná odpověď se seznamem produktů
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: "Produkt A"
+                    price:
+                      type: number
+                      format: float
+                      example: 19.99
+        '401':
+          description: Neautorizovaný přístup
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Neplatný token."
+        '403':
+          description: Nedostatečné oprávnění
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Nemáte oprávnění k zobrazení produktů."
+
+    post:
+      summary: Přidat nový produkt
+      operationId: addProduct
+      security:
+        - OIDC: [openid, profile, products.create]
+      parameters:
+        - $ref: '#/parameters/TraceStateHeader'
+        - $ref: '#/parameters/ClientIPHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Nový Produkt"
+                price:
+                  type: number
+                  format: float
+                  example: 29.99
+      responses:
+        '201':
+          description: Produkt byl úspěšně přidán
+        '400':
+          description: Chybný požadavek
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Chybí povinné pole 'name'."
+
+  /products/{id}:
+    get:
+      summary: Získat detail produktu podle ID
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID produktu, který chcete získat.
+          schema:
+            type: integer
+            example: 1
+        - $ref: '#/parameters/TraceStateHeader'
+        - $ref: '#/parameters/ClientIPHeader'
+      security:
+        - OIDC: [openid, profile, products.read]
+      responses:
+        '200':
+          description: Úspěšná odpověď s detaily produktu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: "Produkt A"
+                  price:
+                    type: number
+                    format: float
+                    example: 19.99
+        '404':
+          description: Produkt nenalezen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Produkt s ID 1 nebyl nalezen."
+
+    put:
+      summary: Aktualizovat produkt podle ID
+      operationId: updateProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID produktu, který chcete aktualizovat.
+          schema:
+            type: integer
+            example: 1
+        - $ref: '#/parameters/TraceStateHeader'
+        - $ref: '#/parameters/ClientIPHeader'
+      security:
+        - OIDC: [openid, profile, products.update]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Aktualizovaný Produkt"
+                price:
+                  type: number
+                  format: float
+                  example: 25.99
+      responses:
+        '200':
+          description: Produkt byl úspěšně aktualizován
+        '404':
+          description: Produkt nenalezen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Produkt s ID 1 nebyl nalezen."
+
+    delete:
+      summary: Smazat produkt podle ID
+      operationId: deleteProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID produktu, který chcete smazat.
+          schema:
+            type: integer
+            example: 1
+        - $ref: '#/parameters/TraceStateHeader'
+        - $ref: '#/parameters/ClientIPHeader'
+      security:
+        - OIDC: [openid, profile, products.delete]
+      responses:
+        '204':
+          description: Produkt byl úspěšně smazán
+        '404':
+          description: Produkt nenalezen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Produkt s ID 1 nebyl nalezen."
+
+  /categories:
+    get:
+      summary: Získat seznam kategorií
+      operationId: getCategories
+      security:
+        - OIDC: [openid, profile, categories.read]
+      parameters:
+        - $ref: '#/parameters/TraceStateHeader'
+        - $ref: '#/parameters/ClientIPHeader'
+      responses:
+        '200':
+          description: Úspěšná odpověď se seznamem kategorií
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: "Kategorie A"
+        '401':
+          description: Neautorizovaný přístup
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Neplatný token."
+
+    post:
+      summary: Přidat novou kategorii
+      operationId: addCategory
+      security:
+        - OIDC: [openid, profile, categories.create]
+      parameters:
+        - $ref: '#/parameters/TraceStateHeader'
+        - $ref: '#/parameters/ClientIPHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Nová Kategorie"
+      responses:
+        '201':
+          description: Kategorie byla úspěšně přidána
+        '400':
+          description: Chybný požadavek
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Chybí povinné pole 'name'."
+
+  /orders:
+    get:
+      summary: Získat seznam objednávek
+      operationId: getOrders
+      security:
+        - OIDC: [openid, profile, orders.read]
+      parameters:
+        - $ref: '#/parameters/TraceStateHeader'
+        - $ref: '#/parameters/ClientIPHeader'
+      responses:
+        '200':
+          description: Úspěšná odpověď se seznamem objednávek
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    totalPrice:
+                      type: number
+                      format: float
+                      example: 199.99
+                    status:
+                      type: string
+                      example: "Zpracováno"
+        '401':
+          description: Neautorizovaný přístup
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Neplatný token."
+
+    post:
+      summary: Vytvořit novou objednávku
+      operationId: createOrder
+      security:
+        - OIDC: [openid, profile, orders.create]
+      parameters:
+        - $ref: '#/parameters/TraceStateHeader'
+        - $ref: '#/parameters/ClientIPHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productIds:
+                  type: array
+                  items:
+                    type: integer
+                    example: 1
+                quantities:
+                  type: array
+                  items:
+                    type: integer
+                    example: 2
+      responses:
+        '201':
+          description: Objednávka byla úspěšně vytvořena
+        '400':
+          description: Chybný požadavek
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Chybí povinné pole 'productIds'."
+        '404':
+          description: Produkt nenalezen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Jeden nebo více produktů nebyly nalezeny."
+
+  /orders/{id}:
+      get:
+        summary: Získat detail objednávky podle ID
+        operationId: getOrderById
+        parameters:
+          - name: id
+            in: path
+            required: true
+            description: ID objednávky, kterou chcete získat.
+            schema:
+              type: integer
+              example: 1
+          - $ref: '#/parameters/TraceStateHeader'
+          - $ref: '#/parameters/ClientIPHeader'
+        security:
+          - OIDC: [openid, profile, orders.read]
+        responses:
+          '200':
+            description: Úspěšná odpověď s detaily objednávky
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    totalPrice:
+                      type: number
+                      format: float
+                      example: 199.99
+                    status:
+                      type: string
+                      example: "Zpracováno"
+          '404':
+            description: Objednávka nenalezena
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      example: "Objednávka s ID 1 nebyla nalezena."
+
+      delete:
+        summary: Smazat objednávku podle ID
+        operationId: deleteOrder
+        parameters:
+          - name: id
+            in: path
+            required: true
+            description: ID objednávky, kterou chcete smazat.
+            schema:
+              type: integer
+              example: 1
+          - $ref: '#/parameters/TraceStateHeader'
+          - $ref: '#/parameters/ClientIPHeader'
+        security:
+          - OIDC: [openid, profile, orders.delete]
+        responses:
+          '204':
+            description: Objednávka byla úspěšně smazána
+          '404':
+            description: Objednávka nenalezena
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      example: "Objednávka s ID 1 nebyla nalezena."
+
+security:
+  - OIDC: []
