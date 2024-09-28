@@ -21,24 +21,14 @@ components:
             openid: Získání identifikátoru uživatele
             profile: Přístup k uživatelskému profilu
             email: Přístup k uživatelské emailové adrese
-            products: 
-              description: Správa produktů
-              operations:
-                - read: 'Čtení seznamu produktů'
-                - create: 'Přidání nového produktu'
-                - update: Aktualizace produktu
-                - delete: Smazání produktu
-            categories:
-              description: Správa kategorií
-              operations:
-                - read: Čtení seznamu kategorií
-                - create: Přidání nové kategorie
-            orders:
-              description: Správa objednávek
-              operations:
-                - read: Čtení seznamu objednávek
-                - create: Vytvoření nové objednávky
-
+            products.read: Čtení seznamu produktů
+            products.create: Přidání nového produktu
+            products.delete: Aktualizace produktu
+            products.update: Smazání produktu
+            categories.read: Čtení seznamu kategorií
+            categories.create: Přidání nové kategorie
+            orders.read: Vytvoření nové objednávky
+            orders.create: Čtení seznamu objednávek
   parameters:
     TraceStateHeader:
       name: tracestate
@@ -65,8 +55,8 @@ paths:
       security:
         - OIDC: [openid, profile, products.read]
       parameters:
-        - $ref: '#/parameters/TraceStateHeader'
-        - $ref: '#/parameters/ClientIPHeader'
+        - $ref: '#components/parameters/TraceStateHeader'
+        - $ref: '#components/parameters/ClientIPHeader'
       responses:
         '200':
           description: Úspěšná odpověď se seznamem produktů
@@ -114,8 +104,8 @@ paths:
       security:
         - OIDC: [openid, profile, products.create]
       parameters:
-        - $ref: '#/parameters/TraceStateHeader'
-        - $ref: '#/parameters/ClientIPHeader'
+        - $ref: '#components/parameters/TraceStateHeader'
+        - $ref: '#components/parameters/ClientIPHeader'
       requestBody:
         required: true
         content:
@@ -156,8 +146,8 @@ paths:
           schema:
             type: integer
             example: 1
-        - $ref: '#/parameters/TraceStateHeader'
-        - $ref: '#/parameters/ClientIPHeader'
+        - $ref: '#components/parameters/TraceStateHeader'
+        - $ref: '#components/parameters/ClientIPHeader'
       security:
         - OIDC: [openid, profile, products.read]
       responses:
@@ -200,8 +190,8 @@ paths:
           schema:
             type: integer
             example: 1
-        - $ref: '#/parameters/TraceStateHeader'
-        - $ref: '#/parameters/ClientIPHeader'
+        - $ref: '#components/parameters/TraceStateHeader'
+        - $ref: '#components/parameters/ClientIPHeader'
       security:
         - OIDC: [openid, profile, products.update]
       requestBody:
@@ -243,8 +233,8 @@ paths:
           schema:
             type: integer
             example: 1
-        - $ref: '#/parameters/TraceStateHeader'
-        - $ref: '#/parameters/ClientIPHeader'
+        - $ref: '#components/parameters/TraceStateHeader'
+        - $ref: '#components/parameters/ClientIPHeader'
       security:
         - OIDC: [openid, profile, products.delete]
       responses:
@@ -268,8 +258,8 @@ paths:
       security:
         - OIDC: [openid, profile, categories.read]
       parameters:
-        - $ref: '#/parameters/TraceStateHeader'
-        - $ref: '#/parameters/ClientIPHeader'
+        - $ref: '#components/parameters/TraceStateHeader'
+        - $ref: '#components/parameters/ClientIPHeader'
       responses:
         '200':
           description: Úspěšná odpověď se seznamem kategorií
@@ -303,8 +293,8 @@ paths:
       security:
         - OIDC: [openid, profile, categories.create]
       parameters:
-        - $ref: '#/parameters/TraceStateHeader'
-        - $ref: '#/parameters/ClientIPHeader'
+        - $ref: '#components/parameters/TraceStateHeader'
+        - $ref: '#components/parameters/ClientIPHeader'
       requestBody:
         required: true
         content:
@@ -336,8 +326,8 @@ paths:
       security:
         - OIDC: [openid, profile, orders.read]
       parameters:
-        - $ref: '#/parameters/TraceStateHeader'
-        - $ref: '#/parameters/ClientIPHeader'
+        - $ref: '#components/parameters/TraceStateHeader'
+        - $ref: '#components/parameters/ClientIPHeader'
       responses:
         '200':
           description: Úspěšná odpověď se seznamem objednávek
@@ -375,8 +365,8 @@ paths:
       security:
         - OIDC: [openid, profile, orders.create]
       parameters:
-        - $ref: '#/parameters/TraceStateHeader'
-        - $ref: '#/parameters/ClientIPHeader'
+        - $ref: '#components/parameters/TraceStateHeader'
+        - $ref: '#components/parameters/ClientIPHeader'
       requestBody:
         required: true
         content:
@@ -430,8 +420,8 @@ paths:
             schema:
               type: integer
               example: 1
-          - $ref: '#/parameters/TraceStateHeader'
-          - $ref: '#/parameters/ClientIPHeader'
+          - $ref: '#components/parameters/TraceStateHeader'
+          - $ref: '#components/parameters/ClientIPHeader'
         security:
           - OIDC: [openid, profile, orders.read]
         responses:
@@ -474,8 +464,8 @@ paths:
             schema:
               type: integer
               example: 1
-          - $ref: '#/parameters/TraceStateHeader'
-          - $ref: '#/parameters/ClientIPHeader'
+          - $ref: '#components/parameters/TraceStateHeader'
+          - $ref: '#components/parameters/ClientIPHeader'
         security:
           - OIDC: [openid, profile, orders.delete]
         responses:
