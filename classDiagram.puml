@@ -1,7 +1,14 @@
 @startuml
 
+interface IPaymentProcessor {
+    +processPayment(amount: float): boolean
+}
 
-class clientOrder {
+interface IDeliveryService {
+    +scheduleDelivery(orderId: string, deliveryDate: string): boolean
+}
+
+class ClientOrder {
     +string orderId
     +string clientId
 }
@@ -11,7 +18,7 @@ class Client {
     +string email
 }
 
-class orderProduct {
+class OrderProduct {
     +int quantity
     +string orderId
     +string productId
@@ -21,10 +28,10 @@ class Product {
     +string id
     +string name
     +float price
-    +productStatus status
+    +ProductStatus status
 }
 
-class productStatus {
+class ProductStatus {
     +INSTOCK
     +OUTOFSTOCK
     +PREORDER
@@ -38,40 +45,42 @@ class Category {
 class Order {
     +string id
     +float totalPrice
-    +orderStatus status
+    +OrderStatus status
 }
 
-class Payment {
+class Payment implements IPaymentProcessor {
     +string id
     +string method
     +boolean confirmed
+
+    +processPayment(amount: float): boolean
 }
 
-class Delivery {
+class Delivery implements IDeliveryService {
     +string id
     +string method
     +string deliveryDate
+
+    +scheduleDelivery(orderId: string, deliveryDate: string): boolean
 }
 
-class orderStatus {
+class OrderStatus {
     +PENDING
     +PROCESSING
     +SHIPPED
     +DELIVERED
 }
 
-Order "1" -- "0..*" orderStatus : has >
-Product "1" -- "0..*" productStatus : has >
-' Product "1" -- "0..*" Order : contains >
-Order "0..*" -- "1" Payment : processed by >
+Order "1" -- "0..*" OrderStatus : has >
+Product "1" -- "0..*" ProductStatus : has >
 Order "0..*" -- "1" Payment : processed by >
 Order "0..*" -- "1" Delivery : delivered by >
 Category "1" -- "0..*" Product : categorizes >
+
 ' Many-to-Many relationship between Order and Product
-Order "0..*" -- "0..*" orderProduct : contains >
-Product "0..*" -- "0..*" orderProduct : includes >
-' Many-to-Many relationship between Order and Product
-Client "0..*" -- "0..*" clientOrder : contains >
-Order "0..*" -- "0..*" clientOrder : includes >
+Order "0..*" -- "0..*" OrderProduct : contains >
+Product "0..*" -- "0..*" OrderProduct : includes >
+Client "0..*" -- "0..*" ClientOrder : contains >
+Order "0..*" -- "0..*" ClientOrder : includes >
 
 @enduml
