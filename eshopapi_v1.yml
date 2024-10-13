@@ -1,3 +1,37 @@
+# This OpenAPI 3.0.0 specification defines the Eshop API, which provides endpoints for managing an e-commerce platform with OIDC (OpenID Connect) support.
+#
+# Info:
+# - Title: Eshop API
+# - Description: API pro správu eshopu s podporou OIDC
+# - Version: 1.1.1
+#
+# Servers:
+# - URL: https://eshop.example.com/v1
+#
+# Components:
+# - Security Schemes:
+#   - OIDC: OAuth2 authorization code flow with scopes for accessing user information and managing products, categories, orders, and payments.
+# - Parameters:
+#   - TraceStateHeader: Optional header for request correlation.
+#   - ClientIPHeader: Optional header for the client's IP address.
+#   - IdPath: Required path parameter for entity ID.
+#
+# Paths:
+# - /products:
+#   - GET: Retrieve a list of products.
+#   - POST: Add a new product.
+# - /products/{id}:
+#   - GET: Retrieve product details by ID.
+#   - PUT: Update a product by ID.
+#   - DELETE: Delete a product by ID.
+# - /categories:
+#   - GET: Retrieve a list of categories.
+#   - POST: Add a new category.
+# - /orders:
+#   - GET: Retrieve a list of orders.
+#   - POST: Create a new order.
+# - /orders/{id}:
+#   - GET: Retrieve order details by ID.
 openapi: 3.0.0
 
 info:
@@ -69,8 +103,8 @@ paths:
       security:
         - OIDC: [openid, profile, products.read]
       parameters:
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       responses:
         "200":
           description: Úspěšná odpověď se seznamem produktů
@@ -153,9 +187,9 @@ paths:
       summary: Získat detail produktu podle ID.
       operationId: getProductById
       parameters:
-        - $ref: "#components/parameters/IdPath"
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/IdPath"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       security:
         - OIDC: [openid, profile, products.read]
       responses:
@@ -193,7 +227,7 @@ paths:
       tags:
         - products controller
       summary: Aktualizovat produkt podle ID.
-      operationId: updateProduct.
+      operationId: updateProduct
       parameters:
         - $ref: "#components/parameters/IdPath"
         - $ref: "#components/parameters/TraceStateHeader"
@@ -210,16 +244,15 @@ paths:
                 name:
                   type: string
                   example: "Aktualizovaný Produkt"
-
                 price:
                   type: number
                   format: float
                   example: 25.99
       responses:
         "200":
-          description: "Produkt byl úspěšně aktualizován."
+          description: Produkt byl úspěšně aktualizován.
         "404":
-          description: "Produkt nenalezen."
+          description: Produkt nenalezen.
           content:
             application/json:
               schema:
@@ -232,7 +265,7 @@ paths:
       tags:
         - products controller
       summary: Smazat produkt podle ID.
-      operationId: deleteProduct.
+      operationId: deleteProduct
       parameters:
         - $ref: "#components/parameters/IdPath"
         - $ref: "#components/parameters/TraceStateHeader"
@@ -241,9 +274,9 @@ paths:
         - OIDC: [openid, profile, products.delete]
       responses:
         "204":
-          description: "Produkt byl úspěšně smazán."
+          description: Produkt byl úspěšně smazán.
         "404":
-          description: "Produkt nenalezen."
+          description: Produkt nenalezen.
           content:
             application/json:
               schema:
@@ -262,11 +295,10 @@ paths:
         - OIDC: [openid, profile, categories.read]
       parameters:
         - $ref: "#components/parameters/TraceStateHeader"
-
         - $ref: "#components/parameters/ClientIPHeader"
       responses:
         "200":
-          description: "Úspěšná odpověď se seznamem kategorií"
+          description: Úspěšná odpověď se seznamem kategorií
           content:
             application/json:
               schema:
@@ -281,7 +313,7 @@ paths:
                       type: string
                       example: "Kategorie A"
         "401":
-          description: "Unauthorized"
+          description: Neautorizovaný přístup
           content:
             application/json:
               schema:
@@ -293,14 +325,13 @@ paths:
     post:
       tags:
         - categories controller
-      summary: Přidat novou.
-      operationId: addCategory.
+      summary: Přidat novou kategorii
+      operationId: addCategory
       security:
         - OIDC: [openid, profile, categories.create]
       parameters:
         - $ref: "#components/parameters/TraceStateHeader"
         - $ref: "#components/parameters/ClientIPHeader"
-
       requestBody:
         required: true
         content:
@@ -313,10 +344,9 @@ paths:
                   example: "Nová Kategorie"
       responses:
         "201":
-          description: "Category was successfully added."
-
+          description: Kategorie byla úspěšně přidána.
         "400":
-          description: "Bad request."
+          description: Chybný požadavek.
           content:
             application/json:
               schema:
@@ -324,13 +354,13 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Missing required field 'name'."
+                    example: "Chybí povinné pole 'name'."
   /orders:
     get:
       tags:
         - orders controller
-      summary: Get orders list.
-      operationId: getOrders.
+      summary: Získat seznam objednávek
+      operationId: getOrders
       security:
         - OIDC: [openid, profile, orders.read]
       parameters:
@@ -338,7 +368,7 @@ paths:
         - $ref: "#components/parameters/ClientIPHeader"
       responses:
         "200":
-          description: "Successful response with order list."
+          description: Úspěšná odpověď se seznamem objednávek
           content:
             application/json:
               schema:
@@ -360,8 +390,8 @@ paths:
     post:
       tags:
         - orders controller
-      summary: Add a new order.
-      operationId: createOrder.
+      summary: Přidat novou objednávku
+      operationId: createOrder
       security:
         - OIDC: [openid, profile, orders.create]
       parameters:
@@ -386,9 +416,9 @@ paths:
                     example: [2]
       responses:
         "201":
-          description: "Order was successfully created."
+          description: Objednávka byla úspěšně vytvořena.
         "400":
-          description: "Bad request."
+          description: Chybný požadavek.
           content:
             application/json:
               schema:
@@ -396,12 +426,12 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Missing required field 'productIds'."
+                    example: "Chybí povinné pole 'productIds'."
   /orders/{id}:
     get:
       tags:
         - orders controller
-      summary: Get order details by ID.
+      summary: Získat detail objednávky podle ID
       operationId: getOrderById
       parameters:
         - $ref: "#components/parameters/IdPath"
@@ -411,7 +441,7 @@ paths:
         - OIDC: [openid, profile, orders.read]
       responses:
         "200":
-          description: "Successful response with order details."
+          description: Úspěšná odpověď s detaily objednávky
           content:
             application/json:
               schema:
@@ -428,7 +458,7 @@ paths:
                     type: string
                     example: "Zpracováno"
         "404":
-          description: "Objednávka nenalezena."
+          description: Objednávka nenalezena.
           content:
             application/json:
               schema:
