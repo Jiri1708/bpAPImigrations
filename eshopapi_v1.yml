@@ -301,8 +301,9 @@ paths:
                   type: object
                   properties:
                     id:
-                      type: integer
-                      example: 1
+                      type: string
+                      format: guid
+                      example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
                     name:
                       type: string
                       example: "Kategorie A"
