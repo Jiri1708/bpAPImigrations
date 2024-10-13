@@ -112,6 +112,8 @@ paths:
                       type: number
                       format: float
                       example: 19.99
+                    status:
+                      $ref: "#/components/schemas/ProductStatus"
     post:
       tags:
         - products controller
@@ -120,8 +122,8 @@ paths:
       security:
         - OIDC: [openid, profile, products.create]
       parameters:
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       requestBody:
         required: true
         content:
@@ -136,7 +138,8 @@ paths:
                   type: number
                   format: float
                   example: 29.99
-
+                status:
+                  $ref: "#/components/schemas/ProductStatus"
       responses:
         "201":
           description: Produkt byl úspěšně přidán.
@@ -155,6 +158,8 @@ paths:
                     type: number
                     format: float
                     example: 29.99
+                  status:
+                    $ref: "#/components/schemas/ProductStatus"
         "400":
           description: Chybný požadavek.
           content:
@@ -197,7 +202,8 @@ paths:
                     type: number
                     format: float
                     example: 19.99
-
+                  status:
+                    $ref: "#/components/schemas/ProductStatus"
         "404":
           description: Produkt nenalezen.
           content:
@@ -215,9 +221,9 @@ paths:
       summary: Aktualizovat produkt podle ID.
       operationId: updateProduct
       parameters:
-        - $ref: "#components/parameters/IdPath"
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/IdPath"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       security:
         - OIDC: [openid, profile, products.update]
       requestBody:
@@ -234,6 +240,8 @@ paths:
                   type: number
                   format: float
                   example: 25.99
+                status:
+                  $ref: "#/components/schemas/ProductStatus"
       responses:
         "200":
           description: Produkt byl úspěšně aktualizován.
@@ -253,9 +261,9 @@ paths:
       summary: Smazat produkt podle ID.
       operationId: deleteProduct
       parameters:
-        - $ref: "#components/parameters/IdPath"
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/IdPath"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       security:
         - OIDC: [openid, profile, products.delete]
       responses:
