@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: Eshop API
-  description: API pro správu eshopu s podporou OIDC
+  description: API for managing the eshop with OIDC support
   version: 1.1.1
 
 servers:
@@ -17,12 +17,12 @@ components:
           authorizationUrl: https://auth.example.com/oauth2/authorize
           tokenUrl: https://auth.example.com/oauth2/token
           scopes:
-            openid: Získání identifikátoru uživatele
-            profile: Přístup k uživatelskému profilu
-            email: Přístup k uživatelské emailové adrese
-            products.read: Čtení seznamu produktů
-            products.create: Přidání nového produktu
-            products.delete: Smazání produktu
+            openid: Obtain user identifier
+            profile: Access to user profile
+            email: Access to the user's email address
+            products.read: Read product list
+            products.create: Adding a new product
+            products.delete: Deleting a product
             products.update: Aktualizace produktu
             categories.read: Čtení seznamu kategorií
             categories.create: Přidání nové kategorie
@@ -288,8 +288,8 @@ paths:
       security:
         - OIDC: [openid, profile, categories.read]
       parameters:
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       responses:
         "200":
           description: Úspěšná odpověď se seznamem kategorií
@@ -325,8 +325,8 @@ paths:
       security:
         - OIDC: [openid, profile, categories.create]
       parameters:
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       requestBody:
         required: true
         content:
@@ -359,8 +359,8 @@ paths:
       security:
         - OIDC: [openid, profile, orders.read]
       parameters:
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       responses:
         "200":
           description: Úspěšná odpověď se seznamem objednávek
@@ -390,8 +390,8 @@ paths:
       security:
         - OIDC: [openid, profile, orders.create]
       parameters:
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       requestBody:
         required: true
         content:
@@ -472,8 +472,8 @@ paths:
       security:
         - OIDC: [openid, profile, clients.read]
       parameters:
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       responses:
         "200":
           description: Úspěšná odpověď se seznamem klientů
@@ -499,8 +499,8 @@ paths:
       security:
         - OIDC: [openid, profile, clients.create]
       parameters:
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       requestBody:
         required: true
         content:
@@ -534,8 +534,8 @@ paths:
       security:
         - OIDC: [openid, profile, payments.create]
       parameters:
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       requestBody:
         required: true
         content:
@@ -576,8 +576,8 @@ paths:
       security:
         - OIDC: [openid, profile, deliveries.schedule]
       parameters:
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       requestBody:
         required: true
         content:
