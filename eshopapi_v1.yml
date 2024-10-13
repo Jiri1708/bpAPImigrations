@@ -1,37 +1,3 @@
-# This OpenAPI 3.0.0 specification defines the Eshop API, which provides endpoints for managing an e-commerce platform with OIDC (OpenID Connect) support.
-#
-# Info:
-# - Title: Eshop API
-# - Description: API pro správu eshopu s podporou OIDC
-# - Version: 1.1.1
-#
-# Servers:
-# - URL: https://eshop.example.com/v1
-#
-# Components:
-# - Security Schemes:
-#   - OIDC: OAuth2 authorization code flow with scopes for accessing user information and managing products, categories, orders, and payments.
-# - Parameters:
-#   - TraceStateHeader: Optional header for request correlation.
-#   - ClientIPHeader: Optional header for the client's IP address.
-#   - IdPath: Required path parameter for entity ID.
-#
-# Paths:
-# - /products:
-#   - GET: Retrieve a list of products.
-#   - POST: Add a new product.
-# - /products/{id}:
-#   - GET: Retrieve product details by ID.
-#   - PUT: Update a product by ID.
-#   - DELETE: Delete a product by ID.
-# - /categories:
-#   - GET: Retrieve a list of categories.
-#   - POST: Add a new category.
-# - /orders:
-#   - GET: Retrieve a list of orders.
-#   - POST: Create a new order.
-# - /orders/{id}:
-#   - GET: Retrieve order details by ID.
 openapi: 3.0.0
 
 info:
@@ -64,6 +30,26 @@ components:
             orders.create: Vytvoření nové objednávky
             orders.update: Aktualizace objednávky
             payments.create: Vytvoření platby
+            clients.read: Čtení seznamu klientů
+            clients.create: Přidání nového klienta
+            deliveries.schedule: Naplánování doručení
+  schemas:
+    ProductStatus:
+      type: string
+      enum:
+        - INSTOCK
+        - OUTOFSTOCK
+        - PREORDER
+      example: INSTOCK
+
+    OrderStatus:
+      type: string
+      enum:
+        - PENDING
+        - PROCESSING
+        - SHIPPED
+        - DELIVERED
+      example: PENDING
 
   parameters:
     TraceStateHeader:
@@ -434,9 +420,9 @@ paths:
       summary: Získat detail objednávky podle ID
       operationId: getOrderById
       parameters:
-        - $ref: "#components/parameters/IdPath"
-        - $ref: "#components/parameters/TraceStateHeader"
-        - $ref: "#components/parameters/ClientIPHeader"
+        - $ref: "#/components/parameters/IdPath"
+        - $ref: "#/components/parameters/TraceStateHeader"
+        - $ref: "#/components/parameters/ClientIPHeader"
       security:
         - OIDC: [openid, profile, orders.read]
       responses:
@@ -467,3 +453,147 @@ paths:
                   error:
                     type: string
                     example: "Objednávka s ID 125125 nebyla nalezena"
+
+  /clients:
+    get:
+      tags:
+        - clients controller
+      summary: Získat seznam klientů
+      operationId: getClients
+      security:
+        - OIDC: [openid, profile, clients.read]
+      parameters:
+        - $ref: "#components/parameters/TraceStateHeader"
+        - $ref: "#components/parameters/ClientIPHeader"
+      responses:
+        "200":
+          description: Úspěšná odpověď se seznamem klientů
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: guid
+                      example: 7e68b0ce-e037-49e6-bf75-7098ac91dfc5
+                    email:
+                      type: string
+                      example: "client@example.com"
+    post:
+      tags:
+        - clients controller
+      summary: Přidat nového klienta
+      operationId: addClient
+      security:
+        - OIDC: [openid, profile, clients.create]
+      parameters:
+        - $ref: "#components/parameters/TraceStateHeader"
+        - $ref: "#components/parameters/ClientIPHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "newclient@example.com"
+      responses:
+        "201":
+          description: Klient byl úspěšně přidán.
+        "400":
+          description: Chybný požadavek.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Chybí povinné pole 'email'."
+
+  /payments:
+    post:
+      tags:
+        - payments controller
+      summary: Vytvořit platbu
+      operationId: createPayment
+      security:
+        - OIDC: [openid, profile, payments.create]
+      parameters:
+        - $ref: "#components/parameters/TraceStateHeader"
+        - $ref: "#components/parameters/ClientIPHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  format: guid
+                  example: "7e68b0ce-e037-49e6-bf75-7098ac91dfc5"
+                method:
+                  type: string
+                  example: "credit_card"
+                amount:
+                  type: number
+                  format: float
+                  example: 100.00
+      responses:
+        "201":
+          description: Platba byla úspěšně vytvořena.
+        "400":
+          description: Chybný požadavek.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Chybí povinné pole 'orderId'."
+  /deliveries:
+    post:
+      tags:
+        - deliveries controller
+      summary: Naplánovat doručení
+      operationId: scheduleDelivery
+      security:
+        - OIDC: [openid, profile, deliveries.schedule]
+      parameters:
+        - $ref: "#components/parameters/TraceStateHeader"
+        - $ref: "#components/parameters/ClientIPHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  format: guid
+                  example: "7e68b0ce-e037-49e6-bf75-7098ac91dfc5"
+                deliveryDate:
+                  type: string
+                  format: date
+                  example: "2023-10-01"
+      responses:
+        "201":
+          description: Doručení bylo úspěšně naplánováno.
+        "400":
+          description: Chybný požadavek.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Chybí povinné pole 'orderId'."

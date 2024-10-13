@@ -31,10 +31,10 @@ class Product {
     +ProductStatus status
 }
 
-class ProductStatus {
-    +INSTOCK
-    +OUTOFSTOCK
-    +PREORDER
+enum ProductStatus {
+    INSTOCK
+    OUTOFSTOCK
+    PREORDER
 }
 
 class Category {
@@ -50,10 +50,16 @@ class Order {
 
 class Payment implements IPaymentProcessor {
     +string id
-    +string method
+    +PaymentMethod method
     +boolean confirmed
 
     +processPayment(amount: float): boolean
+}
+
+enum PaymentMethod {
+    CREDITCARD
+    APPLEPAY
+    GPAY
 }
 
 class Delivery implements IDeliveryService {
@@ -64,11 +70,11 @@ class Delivery implements IDeliveryService {
     +scheduleDelivery(orderId: string, deliveryDate: string): boolean
 }
 
-class OrderStatus {
-    +PENDING
-    +PROCESSING
-    +SHIPPED
-    +DELIVERED
+enum OrderStatus {
+    PENDING
+    PROCESSING
+    SHIPPED
+    DELIVERED
 }
 
 Order "1" -- "0..*" OrderStatus : has >
