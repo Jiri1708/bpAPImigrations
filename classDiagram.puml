@@ -29,6 +29,7 @@ class Product {
     +string name
     +float price
     +ProductStatus status
+    +string categoryId
 }
 
 enum ProductStatus {
@@ -46,12 +47,15 @@ class Order {
     +string id
     +float totalPrice
     +OrderStatus status
+    +List<string> productIds
 }
 
 class Payment implements IPaymentProcessor {
     +string id
     +PaymentMethod method
     +boolean confirmed
+    +string orderId
+    +float amount
 
     +processPayment(amount: float): boolean
 }
@@ -66,6 +70,7 @@ class Delivery implements IDeliveryService {
     +string id
     +string method
     +string deliveryDate
+    +string orderId
 
     +scheduleDelivery(orderId: string, deliveryDate: string): boolean
 }
@@ -82,6 +87,7 @@ Product "1" -- "0..*" ProductStatus : has >
 Order "0..*" -- "1" Payment : processed by >
 Order "0..*" -- "1" Delivery : delivered by >
 Category "1" -- "0..*" Product : categorizes >
+Payment "1" -- "1" PaymentMethod : uses >
 
 ' Many-to-Many relationship between Order and Product
 Order "0..*" -- "0..*" OrderProduct : contains >
