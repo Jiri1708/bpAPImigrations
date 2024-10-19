@@ -1,0 +1,25 @@
+@startuml
+
+|Customer|
+start
+:Browse Products;
+:Select Product;
+:View Product Details;
+:Click "Add to Cart";
+
+|Eshop Frontend|
+:Update Cart;
+:Display Cart;
+
+:Click "Checkout";
+
+|Eshop API|
+:Create Order;
+:Process Payment;
+:Schedule Delivery;
+
+|Customer|
+:Receive Order Confirmation;
+stop
+
+@enduml
