@@ -213,6 +213,16 @@ paths:
                   error:
                     type: string
                     example: "Missing required field 'name'."
+        "404":
+          description: Not Found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Category with ID 7e68b0ce-e037-49e6-bf75-7098ac91dfc5 not found."
 
   /products/{id}:
     get:
@@ -274,6 +284,9 @@ paths:
                   error:
                     type: string
                     example: "Product with ID 1 not found."
+                  error:
+                    type: string
+                    example: "Category with ID 7e68b0ce-e037-49e6-bf75-7098ac91dfc5 not found."
     delete:
       tags:
         - products controller
@@ -519,6 +532,16 @@ paths:
                   error:
                     type: string
                     example: "Missing required field 'orderId'."
+        "404":
+          description: Not Found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Order with ID 7e68b0ce-e037-49e6-bf75-7098ac91dfc5 not found."
 
   /deliveries:
     post:
@@ -550,3 +573,13 @@ paths:
                   error:
                     type: string
                     example: "Missing required field 'orderId'."
+        "404":
+          description: Not Found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Order with ID 7e68b0ce-e037-49e6-bf75-7098ac91dfc5 not found."
