@@ -1,0 +1,37 @@
+@startuml order.puml
+
+actor Customer
+participant "Eshop Frontend" as FE
+participant "Eshop API" as API
+participant "Product Service" as ProductService
+participant "Order Service" as OrderService
+participant "Payment Service" as PaymentService
+participant "Delivery Service" as DeliveryService
+
+Customer -> FE: Browse Products
+FE -> ProductService: GET /products
+ProductService -> API: Fetch product list
+API -> ProductService: Return product list
+ProductService -> FE: Return product list
+FE -> Customer: Display products
+
+Customer -> FE: Add Product to Cart
+FE -> OrderService: POST /orders
+OrderService -> API: Create order
+API -> OrderService: Return order ID
+OrderService -> FE: Return order ID
+
+Customer -> FE: Checkout
+FE -> PaymentService: POST /payments
+PaymentService -> API: Process payment
+API -> PaymentService: Return payment confirmation
+PaymentService -> FE: Return payment confirmation
+
+FE -> DeliveryService: POST /deliveries
+DeliveryService -> API: Schedule delivery
+API -> DeliveryService: Return delivery confirmation
+DeliveryService -> FE: Return delivery confirmation
+
+FE -> Customer: Display order confirmation
+
+@enduml
