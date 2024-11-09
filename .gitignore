@@ -1,3 +1,9 @@
+# Logs
+logs/*.log
+
+# Keep log directory
+!logs/.gitkeep
+
 combined.log
 error.log
 combined.log

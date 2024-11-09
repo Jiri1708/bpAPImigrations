@@ -1,6 +1,7 @@
 // logger.js
 const winston = require("winston");
 const { v4: uuidv4 } = require("uuid");
+const path = require("path");
 
 // Custom format for detailed error logging
 const errorStackFormat = winston.format(info => {
@@ -23,7 +24,7 @@ const logger = winston.createLogger({
   transports: [
     // Error log file
     new winston.transports.File({ 
-      filename: 'error.log', 
+      filename: path.join(__dirname, '../../logs/error.log'), 
       level: 'error',
       format: winston.format.combine(
         winston.format.timestamp(),
@@ -32,7 +33,7 @@ const logger = winston.createLogger({
     }),
     // Combined log file
     new winston.transports.File({ 
-      filename: 'combined.log'
+      filename: path.join(__dirname, '../../logs/combined.log')
     }),
     // Console output with colors
     new winston.transports.Console({
