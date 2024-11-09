@@ -8,7 +8,7 @@ const swaggerDocument = YAML.load("./eshopapi_v1.yml"); // Load your OpenAPI spe
 const initializeMockData = require("./mockData");
 const { logger, requestLogger } = require("./logger");
 const { v4: uuidv4 } = require("uuid");
-const { authMiddleware } = require('./auth');  // Add this near other imports
+const { authMiddleware, authRouter } = require("./auth"); // Add this near other imports
 
 const app = express();
 
@@ -17,7 +17,40 @@ app.use(bodyParser.json());
 app.use(requestLogger); // Add request logger middleware
 
 // Serve Swagger UI
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/api-docs", (req, res, next) => {
+  const protocol = req.protocol;
+  const host = req.get('host');
+  
+  const dynamicSwaggerDoc = JSON.parse(JSON.stringify(swaggerDocument));
+  
+  // Update server URL and auth endpoints
+  dynamicSwaggerDoc.servers = [{
+    url: `${protocol}://${host}`,
+    variables: {
+      protocol: {
+        enum: ['http', 'https'],
+        default: protocol
+      },
+      host: {
+        default: host
+      }
+    }
+  }];
+
+  // Update OAuth2 endpoints
+  dynamicSwaggerDoc.components.securitySchemes.OIDC.flows.authorizationCode.authorizationUrl = 
+    `${protocol}://${host}/auth/oauth2/authorize`;
+  dynamicSwaggerDoc.components.securitySchemes.OIDC.flows.authorizationCode.tokenUrl = 
+    `${protocol}://${host}/auth/oauth2/token`;
+  
+  req.swaggerDoc = dynamicSwaggerDoc;
+  next();
+}, swaggerUi.serve, swaggerUi.setup(null, {
+  swaggerOptions: {
+    displayRequestDuration: true
+  },
+  explorer: true
+}));
 
 // In-memory storage
 const db = {
@@ -33,7 +66,7 @@ const db = {
 const productsRouter = express.Router();
 
 // GET /products
-productsRouter.get("/", authMiddleware(['products.read']), (req, res) => {
+productsRouter.get("/", authMiddleware(["products.read"]), (req, res) => {
   try {
     const products = Array.from(db.products.values());
     logger.debug({
@@ -64,7 +97,9 @@ productsRouter.get("/", authMiddleware(['products.read']), (req, res) => {
 productsRouter.get("/:id", (req, res) => {
   const product = db.products.get(req.params.id);
   if (!product) {
-    return res.status(404).json({ error: "Product not found" });
+    return res.status(404).json({
+      error: `Product with ID ${req.params.id} not found.`
+    });
   }
   const response = {
     ...product,
@@ -77,7 +112,7 @@ productsRouter.get("/:id", (req, res) => {
 });
 
 // POST /products
-productsRouter.post("/", authMiddleware(['products.create']), (req, res) => {
+productsRouter.post("/", authMiddleware(["products.create"]), (req, res) => {
   const id = Date.now().toString();
   const product = {
     id,
@@ -111,7 +146,7 @@ ordersRouter.get("/", (req, res) => {
 });
 
 // POST /orders
-ordersRouter.post("/", authMiddleware(['orders.create']), (req, res) => {
+ordersRouter.post("/", authMiddleware(["orders.create"]), (req, res) => {
   const id = Date.now().toString();
   const order = {
     id,
@@ -166,29 +201,24 @@ deliveriesRouter.post("/", (req, res) => {
 app.use("/products", productsRouter);
 app.use("/orders", ordersRouter);
 app.use("/deliveries", deliveriesRouter);
+app.use("/auth", authRouter); // Add auth routes
 
 // Enhanced error handling
 app.use((err, req, res, next) => {
   logger.error("Error occurred", {
     requestId: req.requestId,
-    error: {
-      message: err.message,
-      stack: err.stack,
-      name: err.name,
-    },
-    request: {
-      method: req.method,
-      path: req.path,
-      body: req.body,
-      query: req.query,
-    },
-    timestamp: new Date().toISOString(),
+    error: err
   });
 
-  res.status(500).json({
-    error: "Internal Server Error",
-    requestId: req.requestId,
-  });
+  // Format error response according to OpenAPI spec
+  const errorResponse = {
+    error: err.message || "Internal Server Error"
+  };
+
+  // Set appropriate status code
+  const statusCode = err.statusCode || 500;
+
+  res.status(statusCode).json(errorResponse);
 });
 
 // Initialize data and start server
