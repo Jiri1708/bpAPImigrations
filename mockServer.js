@@ -32,7 +32,7 @@ const db = {
 const productsRouter = express.Router();
 
 // GET /products
-productsRouter.get("/", (req, res) => {
+productsRouter.get("/", authMiddleware(['products.read']), (req, res) => {
   try {
     const products = Array.from(db.products.values());
     logger.debug({
@@ -76,7 +76,7 @@ productsRouter.get("/:id", (req, res) => {
 });
 
 // POST /products
-productsRouter.post("/", (req, res) => {
+productsRouter.post("/", authMiddleware(['products.create']), (req, res) => {
   const id = Date.now().toString();
   const product = {
     id,
@@ -110,7 +110,7 @@ ordersRouter.get("/", (req, res) => {
 });
 
 // POST /orders
-ordersRouter.post("/", (req, res) => {
+ordersRouter.post("/", authMiddleware(['orders.create']), (req, res) => {
   const id = Date.now().toString();
   const order = {
     id,
