@@ -8,6 +8,7 @@ const swaggerDocument = YAML.load("./eshopapi_v1.yml"); // Load your OpenAPI spe
 const initializeMockData = require("./mockData");
 const { logger, requestLogger } = require("./logger");
 const { v4: uuidv4 } = require("uuid");
+const { authMiddleware } = require('./auth');  // Add this near other imports
 
 const app = express();
 
