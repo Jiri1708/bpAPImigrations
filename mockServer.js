@@ -9,8 +9,37 @@ const initializeMockData = require("./src/utils/mockData");
 const { logger, requestLogger } = require("./src/middleware/logger");
 const { v4: uuidv4 } = require("uuid");
 const { authMiddleware, authRouter } = require("./src/middleware/auth");
-
+const ordersRouter = require("./src/routes/orders");
+const paymentsRouter = require("./src/routes/payments");
+const deliveriesRouter = require("./src/routes/deliveries");
+const clientsRouter = require("./src/routes/clients");
+const categoriesRouter = require("./src/routes/categories");
 const app = express();
+
+const router = express.Router();
+
+router.get("/", (req, res) => {
+  try {
+    const products = Array.from(db.products.values());
+    logger.debug("Fetching all products", { count: products.length });
+
+    const response = products.map((product) => ({
+      ...product,
+      _links: {
+        self: `/products/${product.id}`,
+        category: `/categories/${product.categoryId}`,
+      },
+    }));
+    res.json(response);
+  } catch (error) {
+    logger.error("Error fetching products", { error });
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Add other product routes...
+
+module.exports = router;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -99,28 +128,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-const router = express.Router();
-
-router.get("/", (req, res) => {
-  try {
-    const products = Array.from(db.products.values());
-    logger.debug("Fetching all products", { count: products.length });
-
-    const response = products.map((product) => ({
-      ...product,
-      _links: {
-        self: `/products/${product.id}`,
-        category: `/categories/${product.categoryId}`,
-      },
-    }));
-    res.json(response);
-  } catch (error) {
-    logger.error("Error fetching products", { error });
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// Add other product routes...
-
-module.exports = router;
