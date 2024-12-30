@@ -1,0 +1,49 @@
+@startuml
+title Eshop API Schemas
+
+entity Product {
+  * id: string
+  * name: string
+  * price: number
+  * status: string
+  * categoryId: string
+}
+
+entity Category {
+  * id: string
+  * name: string
+}
+
+entity Order {
+  * id: string
+  * totalPrice: number
+  * status: string
+  * productIds: string[]
+  * clientId: string
+}
+
+entity Client {
+  * id: string
+  * email: string
+}
+
+entity Payment {
+  * id: string
+  * orderId: string
+  * method: string
+  * amount: number
+}
+
+entity Delivery {
+  * id: string
+  * orderId: string
+  * deliveryDate: string
+}
+
+Product --> Category : belongs to
+Order --> Product : contains
+Order --> Client : belongs to
+Payment --> Order : belongs to
+Delivery --> Order : belongs to
+
+@enduml

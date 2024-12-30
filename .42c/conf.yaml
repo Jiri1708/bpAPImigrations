@@ -1,0 +1,3 @@
+apis:
+  docs/api/api/eshopapi_v1.yml:
+    alias: eshop-api

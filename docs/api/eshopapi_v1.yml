@@ -231,7 +231,6 @@ paths:
                   error:
                     type: string
                     example: "Category with ID 7e68b0ce-e037-49e6-bf75-7098ac91dfc5 not found."
-
   /products/{id}:
     get:
       tags:
@@ -261,7 +260,6 @@ paths:
                   error:
                     type: string
                     example: "Product with ID 1 not found."
-
     put:
       tags:
         - products controller
@@ -316,7 +314,6 @@ paths:
                   error:
                     type: string
                     example: "Product with ID 1 not found."
-
   /categories:
     get:
       tags:
