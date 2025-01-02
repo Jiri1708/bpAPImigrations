@@ -48,6 +48,7 @@ components:
         id:
           type: string
           format: guid
+          readOnly: true
         name:
           type: string
         price:
@@ -58,6 +59,24 @@ components:
         categoryId:
           type: string
           format: guid
+        _links:
+          type: object
+          readOnly: true
+          properties:
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+                method:
+                  type: string
+            cancel:
+              type: object
+              properties:
+                href:
+                  type: string
+                method:
+                  type: string
 
     Category:
       type: object
@@ -65,6 +84,7 @@ components:
         id:
           type: string
           format: guid
+          readOnly: true
         name:
           type: string
 
@@ -74,6 +94,7 @@ components:
         id:
           type: string
           format: guid
+          readOnly: true
         totalPrice:
           type: number
           format: float
@@ -84,6 +105,24 @@ components:
           items:
             type: string
             format: guid
+        _links:
+          type: object
+          readOnly: true
+          properties:
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+                method:
+                  type: string
+            cancel:
+              type: object
+              properties:
+                href:
+                  type: string
+                method:
+                  type: string
 
     Client:
       type: object
@@ -91,6 +130,7 @@ components:
         id:
           type: string
           format: guid
+          readOnly: true
         email:
           type: string
 
@@ -100,6 +140,7 @@ components:
         id:
           type: string
           format: guid
+          readOnly: true
         orderId:
           type: string
           format: guid
@@ -115,12 +156,32 @@ components:
         id:
           type: string
           format: guid
+          readOnly: true
         orderId:
           type: string
           format: guid
         deliveryDate:
           type: string
           format: date
+        _links:
+          type: object
+          readOnly: true
+          properties:
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+                method:
+                  type: string
+            cancel:
+              type: object
+              properties:
+                href:
+                  type: string
+                method:
+                  type: string
+
 
     ProductStatus:
       type: string
@@ -185,9 +246,30 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Product"
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  _links:
+                    type: object
+                    properties:
+                      self:
+                        type: object
+                        properties:
+                          href:
+                            type: string
+                          method:
+                            type: string
+                      create:
+                        type: object
+                        properties:
+                          href:
+                            type: string
+                          method:
+                            type: string
+                            
     post:
       tags:
         - products controller
@@ -391,9 +473,29 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Order"
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+                  _links:
+                    type: object
+                    properties:
+                      self:
+                        type: object
+                        properties:
+                          href:
+                            type: string
+                          method:
+                            type: string
+                      create:
+                        type: object
+                        properties:
+                          href:
+                            type: string
+                          method:
+                            type: string
     post:
       tags:
         - orders controller
@@ -418,15 +520,6 @@ paths:
                   orderId:
                     type: string
                     example: "67890"
-                  _links:
-                    type: object
-                    properties:
-                      self:
-                        type: string
-                        example: "/orders/67890"
-                      cancel:
-                        type: string
-                        example: "/orders/67890/cancel"
         "400":
           description: Bad request.
           content:
@@ -471,15 +564,6 @@ paths:
                     type: string
                   status:
                     type: string
-                  _links:
-                    type: object
-                    properties:
-                      self:
-                        type: string
-                        example: "/orders/67890"
-                      cancel:
-                        type: string
-                        example: "/orders/67890/cancel"
         "404":
           description: Order not found.
           content:
@@ -644,15 +728,6 @@ paths:
                   deliveryId:
                     type: string
                     example: "12345"
-                  _links:
-                    type: object
-                    properties:
-                      self:
-                        type: string
-                        example: "/deliveries/12345"
-                      cancel:
-                        type: string
-                        example: "/deliveries/12345/cancel"
         "400":
           description: Bad request.
           content:
@@ -698,15 +773,6 @@ paths:
                     type: string
                   status:
                     type: string
-                  _links:
-                    type: object
-                    properties:
-                      self:
-                        type: string
-                        example: "/deliveries/12345"
-                      cancel:
-                        type: string
-                        example: "/deliveries/12345/cancel"
         "404":
           description: Delivery not found.
           content:
