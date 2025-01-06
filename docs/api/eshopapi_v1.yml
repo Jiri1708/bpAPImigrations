@@ -268,8 +268,7 @@ paths:
                           href:
                             type: string
                           method:
-                            type: string
-                            
+                            type: string                           
     post:
       tags:
         - products controller
